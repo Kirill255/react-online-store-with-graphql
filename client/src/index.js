@@ -11,6 +11,7 @@ import Checkout from "./components/Checkout";
 import * as serviceWorker from "./serviceWorker";
 
 import "gestalt/dist/gestalt.css";
+import "./index.css";
 
 const Root = () => (
   <Router>
@@ -18,10 +19,10 @@ const Root = () => (
       <Navbar />
 
       <Switch>
-        <Route to="/" exact component={App} />
-        <Route to="/signin" component={Signin} />
-        <Route to="/signup" component={Signup} />
-        <Route to="/checkout" component={Checkout} />
+        <Route path="/" exact component={App} />
+        <Route path="/signin" component={Signin} />
+        <Route path="/signup" component={Signup} />
+        <Route path="/checkout" component={Checkout} />
       </Switch>
     </>
   </Router>
