@@ -1,0 +1,21 @@
+{
+  "defaultConnection": "default",
+  "connections": {
+    "default": {
+      "connector": "strapi-hook-mongoose",
+      "settings": {
+        "client": "mongo",
+        "host": "ds062807.mlab.com",
+        "port": "62807",
+        "database": "react-online-store-with-graphql",
+        "username": "kirilldb",
+        "password": "he3Yd9xWPr1gulf",
+        "srv": false
+      },
+      "options": {
+        "authenticationDatabase": "react-online-store-with-graphql",
+        "ssl": false
+      }
+    }
+  }
+}
