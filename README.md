@@ -12,6 +12,8 @@ https://blog.strapi.io/building-a-static-website-using-gatsby-and-strapi/
 
 ## Strapi
 
+### Install
+
 1. `npm install strapi@alpha -g` or `npm install -g strapi@beta` or try `npm install -g strapi@beta --unsafe-perm` https://github.com/strapi/strapi/issues/3386, также возникли проблемы с установкой на node v12, в данный момент strapi работает только на node v10 https://github.com/strapi/strapi/issues/3342, пришлось ставить node v10 и юзать strapi@alpha
 
 2. Then create project `strapi new server` and select `custom` -> It's a database connection setup:
@@ -57,3 +59,57 @@ Choose your installation type Custom (manual settings):
 5. Create a root(admin) user
 
 6. Welcome on board! This will also create several collections in your database.
+
+### GraphQL
+
+1. Install GraphQL plugin on admin dashboard from "Marketplace" or `strapi install graphql`
+
+![gql](https://user-images.githubusercontent.com/24504648/59390694-b42ec000-8d7a-11e9-8543-dafe1a5fd9c0.png)
+
+2. Go to playground http://localhost:1337/graphql
+
+3. Create on dashboard new Content Types: `Brand` with 3 fields: `name`, `description`, `image`
+
+![type](https://user-images.githubusercontent.com/24504648/59390497-1f2bc700-8d7a-11e9-995e-ca2f930895a3.png)
+
+4. Add new Brand (several)
+
+![brand](https://user-images.githubusercontent.com/24504648/59390612-7e89d700-8d7a-11e9-9b4d-1cfe11ecc8ea.png)
+
+5. Add on dashboard Roles & Permissions for Brand type in Public and Authenticated: find(brands) and findone(brand(id)) with ratelimit
+
+![roles](https://user-images.githubusercontent.com/24504648/59390437-e4299380-8d79-11e9-9f12-3920e7b2ec34.png)
+
+6. Make requests
+
+```gql
+query {
+  brands {
+    _id
+    name
+    description
+    image {
+      _id
+      name
+      mime
+      url
+    }
+  }
+}
+```
+
+```gql
+query {
+  brand(id: "5d014f2d4eb948169c086fda") {
+    _id
+    name
+    description
+    image {
+      _id
+      name
+      mime
+      url
+    }
+  }
+}
+```
