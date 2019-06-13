@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { Container, Box, Heading, Card, Image, Text, SearchField, Icon, Spinner } from "gestalt";
+// prettier-ignore
+import { Container, Box, Heading, Card, Image, Text, SearchField, Icon /* , Spinner */ } from "gestalt";
 import { Link } from "react-router-dom";
 import Strapi from "strapi-sdk-javascript/build/main";
+
+import Loader from "./Loader ";
 
 const apiUrl = process.env.API_URL || "http://localhost:1337";
 const strapi = new Strapi(apiUrl);
@@ -119,7 +122,8 @@ function App() {
         ))}
       </Box>
       {/* Spinner */}
-      <Spinner show={loadingBrands} accessibilityLabel="Loading Spinner" />
+      {/* <Spinner show={loadingBrands} accessibilityLabel="Loading Spinner" /> */}
+      <Loader show={loadingBrands} />
     </Container>
   );
 }
