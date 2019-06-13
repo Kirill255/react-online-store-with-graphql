@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Container, Box, Heading, Card, Image, Text, SearchField, Icon } from "gestalt";
+import { Container, Box, Heading, Card, Image, Text, SearchField, Icon, Spinner } from "gestalt";
 import { Link } from "react-router-dom";
 import Strapi from "strapi-sdk-javascript/build/main";
 
@@ -9,6 +9,7 @@ const strapi = new Strapi(apiUrl);
 function App() {
   const [brands, setBrands] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [loadingBrands, setLoadingBrands] = useState(true);
 
   async function fetchAPI() {
     try {
@@ -28,8 +29,10 @@ function App() {
       });
 
       setBrands(data.brands);
+      setLoadingBrands(false);
     } catch (error) {
       console.log(error);
+      setLoadingBrands(false);
     }
   }
 
@@ -115,6 +118,8 @@ function App() {
           </Box>
         ))}
       </Box>
+      {/* Spinner */}
+      <Spinner show={loadingBrands} accessibilityLabel="Loading Spinner" />
     </Container>
   );
 }
