@@ -72,9 +72,11 @@ Choose your installation type Custom (manual settings):
 
 ![type](https://user-images.githubusercontent.com/24504648/59390497-1f2bc700-8d7a-11e9-995e-ca2f930895a3.png)
 
-4. Add new Brand (several)
+4. Add several new Brands
 
 ![brand](https://user-images.githubusercontent.com/24504648/59390612-7e89d700-8d7a-11e9-9b4d-1cfe11ecc8ea.png)
+
+![brand](https://user-images.githubusercontent.com/24504648/59439955-d702b800-8dfe-11e9-8ffd-c85f31d17185.png)
 
 5. Add on dashboard Roles & Permissions for Brand type in Public and Authenticated: find(brands) and findone(brand(id)) with ratelimit
 
@@ -110,6 +112,55 @@ query {
       mime
       url
     }
+  }
+}
+```
+
+7. Create on dashboard new Content Types: `Brew` with 5 fields: `name`, `description`, `image`, `price` and relation with Brand
+
+![brews](https://user-images.githubusercontent.com/24504648/59439656-5643bc00-8dfe-11e9-811f-49983a6b35cd.png)
+
+8. Add several new Brews
+
+![brew](https://user-images.githubusercontent.com/24504648/59439996-e8e45b00-8dfe-11e9-8c51-27df2367db6b.png)
+
+9. Add on dashboard Roles & Permissions for Brew type in Public and Authenticated: find(brews) and findone(brew(id)) with ratelimit
+
+![permis](https://user-images.githubusercontent.com/24504648/59441394-3235aa00-8e01-11e9-96e0-cfa4aaa98770.png)
+
+10. Make requests
+
+```gql
+query {
+  brews {
+    _id
+    createdAt
+    updatedAt
+    name
+    description
+    image {
+      url
+    }
+    price
+    brand {
+      _id
+      name
+    }
+  }
+}
+```
+
+```gql
+query {
+  brew(id: "5d02566f82ac160bb8db835a") {
+    _id
+    createdAt
+    name
+    description
+    image {
+      url
+    }
+    price
   }
 }
 ```
