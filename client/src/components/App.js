@@ -39,6 +39,15 @@ function App() {
 
   const handleChange = ({ value }) => setSearchTerm(value); // e.value, not e.target.value, it's gestalt input
 
+  const filteredBrands = () => {
+    return brands.filter((brand) => {
+      return (
+        brand.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        brand.description.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    });
+  };
+
   return (
     <Container>
       {/* Brands Search Field */}
@@ -78,7 +87,7 @@ function App() {
         justifyContent="around"
         wrap
       >
-        {brands.map((brand) => (
+        {filteredBrands().map((brand) => (
           <Box width={200} margin={2} paddingY={4} key={brand._id}>
             <Card
               image={
