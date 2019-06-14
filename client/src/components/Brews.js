@@ -5,7 +5,7 @@ import Strapi from "strapi-sdk-javascript/build/main";
 
 import Loader from "./Loader ";
 
-import { calculatePrice } from "../utils";
+import { calculatePrice, getCartFromLocalStorage, setCartToLocalStorage } from "../utils";
 
 const apiUrl = process.env.API_URL || "http://localhost:1337";
 const strapi = new Strapi(apiUrl);
@@ -50,6 +50,25 @@ const Brews = ({ match }) => {
   useEffect(() => {
     fetchAPI();
   }, [fetchAPI]);
+
+  // https://stackoverflow.com/questions/54954091/how-to-use-callback-with-usestate-hook-in-react
+  // https://www.robinwieruch.de/react-usestate-callback/
+  // https://github.com/the-road-to-learn-react/use-state-with-callback
+  // суть в том что нам нужно чтобы значение корзины не обнулялось при перезагрузке страницы, для этого будет использовать localStorage
+  // с react-class-component мы могли бы сделать что-то вроде того:
+  // this.setState({ cartItems: updatedItems }, () => setCartToLocalStorage(updatedItems)); и this.setState({ cartItems: filteredItems }, () => setCartToLocalStorage(filteredItems));
+  // но у хука useState нет коллбэка, поэтому придёться сделать примерно так
+
+  // получить значения из localStorage при загрузке/перезагрузке страницы
+  useEffect(() => {
+    const items = getCartFromLocalStorage();
+    setCartItems(items);
+  }, []);
+
+  // обновить значения в localStorage при изменении cartItems, тоесть добавили/удалили item
+  useEffect(() => {
+    setCartToLocalStorage(cartItems);
+  }, [cartItems]);
 
   // просто посмотреть что приходит
   // useEffect(() => {
