@@ -7,6 +7,7 @@ import App from "./components/App";
 import Signin from "./components/Signin";
 import Signup from "./components/Signup";
 import Checkout from "./components/Checkout";
+import Brews from "./components/Brews";
 
 import * as serviceWorker from "./serviceWorker";
 
@@ -23,6 +24,7 @@ const Root = () => (
         <Route path="/signin" component={Signin} />
         <Route path="/signup" component={Signup} />
         <Route path="/checkout" component={Checkout} />
+        <Route path="/:brandId" component={Brews} />
       </Switch>
     </>
   </Router>
