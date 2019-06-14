@@ -8,6 +8,8 @@ https://github.com/reedbarger/ecommerce-react-graphql-stripe
 
 https://github.com/simotae14/EcommerceReactGraphqlStripe
 
+https://github.com/mariobermudezjr/ecommerce-react-graphql-stripe
+
 https://blog.strapi.io/building-a-static-website-using-gatsby-and-strapi/
 
 ## Strapi

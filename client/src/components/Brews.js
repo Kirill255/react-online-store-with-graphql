@@ -1,8 +1,11 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { Container, Box, Heading, Text, Image, Card, Button } from "gestalt";
+import { Link } from "react-router-dom";
+import { Container, Box, Heading, Text, Image, Card, Button, Mask, IconButton } from "gestalt";
 import Strapi from "strapi-sdk-javascript/build/main";
 
 import Loader from "./Loader ";
+
+import { calculatePrice } from "../utils";
 
 const apiUrl = process.env.API_URL || "http://localhost:1337";
 const strapi = new Strapi(apiUrl);
@@ -10,6 +13,7 @@ const strapi = new Strapi(apiUrl);
 const Brews = ({ match }) => {
   const [brews, setBrews] = useState([]);
   const [brand, setBrand] = useState("");
+  const [cartItems, setCartItems] = useState([]);
   const [loadingBrand, setLoadingBrand] = useState(true);
 
   const fetchAPI = useCallback(async () => {
@@ -51,6 +55,32 @@ const Brews = ({ match }) => {
   // useEffect(() => {
   //   console.log(match.params.brandId);
   // }, [match.params.brandId]);
+
+  const addItemToCart = (brew) => {
+    const alreadyInCart = cartItems.findIndex((item) => item.id === brew.id);
+
+    if (alreadyInCart === -1) {
+      // если ещё нет товара в корзине
+      const updatedItems = cartItems.concat({
+        ...brew,
+        quantity: 1
+      });
+
+      setCartItems(updatedItems);
+    } else {
+      // если есть, то нужно увеличить кол-во
+      const updatedItems = [...cartItems];
+
+      updatedItems[alreadyInCart].quantity += 1;
+      setCartItems(updatedItems);
+    }
+  };
+
+  const deleteItemFromCart = (itemToDeleteId) => {
+    const filteredItems = cartItems.filter((item) => item.id !== itemToDeleteId);
+
+    setCartItems(filteredItems);
+  };
 
   return (
     <Container>
@@ -118,7 +148,7 @@ const Brews = ({ match }) => {
                           <Button
                             text="Add to Cart"
                             color="blue"
-                            onClick={() => this.addItemToCart(brew)}
+                            onClick={() => addItemToCart(brew)}
                           />
                         </Text>
                       </Box>
@@ -127,6 +157,45 @@ const Brews = ({ match }) => {
                 </Box>
               ))}
             </Box>
+          </Box>
+          {/* User Cart */}
+          <Box alignSelf="end" marginTop={2} marginLeft={8}>
+            <Mask shape="rounded" wash>
+              <Box display="flex" direction="column" alignItems="center" padding={2}>
+                {/* User Cart Heading */}
+                <Heading align="center" size="sm">
+                  Your Cart
+                </Heading>
+                <Text color="gray" italic>
+                  {cartItems.length} items selected
+                </Text>
+                {/* Cart Items */}
+                {cartItems.map((item) => (
+                  <Box key={item.id} display="flex" alignItems="center">
+                    <Text>
+                      {item.name} x {item.quantity} — $ {(item.quantity * item.price).toFixed(2)}
+                    </Text>
+                    <IconButton
+                      accessibilityLabel="Delete Item"
+                      icon="cancel"
+                      size="sm"
+                      iconColor="red"
+                      onClick={() => deleteItemFromCart(item.id)}
+                    />
+                  </Box>
+                ))}
+                {/* Total Price of Cart Items */}
+                <Box display="flex" direction="column" justifyContent="center" alignItems="center">
+                  <Box margin={2}>
+                    {cartItems.length === 0 && <Text color="red">Please select some items</Text>}
+                  </Box>
+                  <Text size="lg">Total: {calculatePrice(cartItems)}</Text>
+                  <Text>
+                    <Link to="/checkout">Checkout</Link>
+                  </Text>
+                </Box>
+              </Box>
+            </Mask>
           </Box>
         </Box>
       )}
