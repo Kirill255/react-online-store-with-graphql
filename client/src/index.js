@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import { BrowserRouter as Router, Switch, Route, Redirect } from "react-router-dom";
 
 import Navbar from "./components/Navbar";
 import App from "./components/App";
@@ -9,10 +9,29 @@ import Signup from "./components/Signup";
 import Checkout from "./components/Checkout";
 import Brews from "./components/Brews";
 
+import { getTokenFromLocalStorage } from "./utils";
 import * as serviceWorker from "./serviceWorker";
 
 import "gestalt/dist/gestalt.css";
 import "./index.css";
+
+const PrivateRoute = ({ component: Component, ...rest }) => (
+  <Route
+    {...rest}
+    render={(props) =>
+      getTokenFromLocalStorage() !== null ? (
+        <Component {...props} />
+      ) : (
+        <Redirect
+          to={{
+            pathname: "/signin",
+            state: { from: props.location }
+          }}
+        />
+      )
+    }
+  />
+);
 
 const Root = () => (
   <Router>
@@ -23,7 +42,7 @@ const Root = () => (
         <Route path="/" exact component={App} />
         <Route path="/signin" component={Signin} />
         <Route path="/signup" component={Signup} />
-        <Route path="/checkout" component={Checkout} />
+        <PrivateRoute path="/checkout" component={Checkout} />
         <Route path="/:brandId" component={Brews} />
       </Switch>
     </>

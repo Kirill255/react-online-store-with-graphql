@@ -9,8 +9,8 @@ import { setTokenToLocalStorage } from "../utils";
 const apiUrl = process.env.API_URL || "http://localhost:1337";
 const strapi = new Strapi(apiUrl);
 
-// history приходит из роута
-const Signin = ({ history }) => {
+// history и location приходят из роута
+const Signin = ({ history, location }) => {
   const [user, setUser] = useState({
     name: "",
     password: ""
@@ -44,7 +44,14 @@ const Signin = ({ history }) => {
       setLoading(false);
       // put token (to manage user session) in localStorage
       setTokenToLocalStorage(response.jwt);
-      redirectUser("/");
+
+      // переадресация обратно на тот роут с которого нас прислали, если он есть, иначе на "/"
+      // смотрим если есть location.state, то берём из него from, иначе создаём фейк структуру (т.к. мы используем деструктуризацию const { from } = ...) чтобы взять "/"
+      const { from } = location.state || { from: { pathname: "/" } };
+      // можно конечно проще сделать
+      // const from = (location.state && location.state.from) || { pathname: "/" };
+      redirectUser(from);
+      // redirectUser("/");
     } catch (error) {
       console.log(error);
       setLoading(false);
