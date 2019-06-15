@@ -1,12 +1,24 @@
 import React, { useState } from "react";
 import { Container, Box, Button, Heading, Text, TextField } from "gestalt";
+import Strapi from "strapi-sdk-javascript/build/main";
 
-const Signup = () => {
+import ToastMessage from "./ToastMessage";
+
+import { setTokenToLocalStorage } from "../utils";
+
+const apiUrl = process.env.API_URL || "http://localhost:1337";
+const strapi = new Strapi(apiUrl);
+
+// history приходит из роута
+const Signup = ({ history }) => {
   const [user, setUser] = useState({
     name: "",
     email: "",
     password: ""
   });
+  const [toastVisible, setToastVisible] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
+  const [loading, setLoading] = useState(false);
 
   // it's gestalt input -> e.value, not e.target.value, e -> {event: SyntheticEvent, value: "yourvalue"}
   const handleChange = ({ event, value }) => {
@@ -17,15 +29,45 @@ const Signup = () => {
     setUser((prevUser) => ({ ...prevUser, [name]: value })); // или так
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!isFormEmpty(user)) {
-      console.log(user);
+    // если поля формы пустые
+    if (isFormEmpty(user)) {
+      showToast("Fill in all fields");
+      return;
+    }
+
+    // sign up user
+    try {
+      setLoading(true);
+      const response = await strapi.register(user.name, user.email, user.password);
+      // console.log(response);
+
+      setLoading(false);
+      // put token (to manage user session) in localStorage
+      setTokenToLocalStorage(response.jwt);
+      redirectUser("/");
+    } catch (error) {
+      console.log(error);
+      setLoading(false);
+      showToast(error.message);
     }
   };
 
   const isFormEmpty = ({ name, email, password }) => !name || !email || !password;
+
+  const showToast = (msg) => {
+    setToastVisible(true);
+    setToastMessage(msg);
+
+    setTimeout(() => {
+      setToastVisible(false);
+      setToastMessage("");
+    }, 3000);
+  };
+
+  const redirectUser = (path) => history.push(path);
 
   return (
     <Container>
@@ -81,9 +123,13 @@ const Signup = () => {
             placeholder="Password"
             onChange={handleChange}
           />
-          <Button type="submit" text="Submit" color="blue" inline />
+          <Box marginTop={1}>
+            <Button type="submit" text="Submit" color="blue" inline disabled={loading} />
+          </Box>
         </form>
       </Box>
+      {/* ToastMessage */}
+      <ToastMessage show={toastVisible} message={toastMessage} />
     </Container>
   );
 };
