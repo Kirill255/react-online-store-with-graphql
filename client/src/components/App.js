@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 // prettier-ignore
 import { Container, Box, Heading, Card, Image, Text, SearchField, Icon /* , Spinner */ } from "gestalt";
 import { Link } from "react-router-dom";
@@ -13,6 +13,7 @@ function App() {
   const [brands, setBrands] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [loadingBrands, setLoadingBrands] = useState(true);
+  const isMounted = useRef(true);
 
   async function fetchAPI() {
     try {
@@ -31,16 +32,28 @@ function App() {
         }
       });
 
-      setBrands(data.brands);
-      setLoadingBrands(false);
+      // https://www.robinwieruch.de/react-warning-cant-call-setstate-on-an-unmounted-component/
+      // https://stackoverflow.com/questions/54954385/react-useeffect-causing-cant-perform-a-react-state-update-on-an-unmounted-comp
+      // https://toster.ru/q/605261
+      // т.к. запрос асинхронный, то ответ может прийти когда компонент уже размонтирован, и попытаться изменить стейт, нужно предотвратить такое поведение, тоесть менять стейт только если компонент всё ещё смонтирован
+      if (isMounted.current) {
+        setBrands(data.brands);
+        setLoadingBrands(false);
+      }
     } catch (error) {
       console.log(error);
-      setLoadingBrands(false);
+      if (isMounted.current) {
+        setLoadingBrands(false);
+      }
     }
   }
 
   useEffect(() => {
     fetchAPI();
+
+    return () => {
+      isMounted.current = false;
+    };
   }, []);
 
   const handleChange = ({ value }) => setSearchTerm(value); // e.value, not e.target.value, it's gestalt input
