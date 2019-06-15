@@ -22,9 +22,28 @@ export const getCartFromLocalStorage = (cartKey = CART_KEY) => {
   return [];
 };
 
+export const clearCartFromLocalStorage = (cartKey = CART_KEY) => {
+  if (localStorage) {
+    localStorage.removeItem(cartKey);
+  }
+};
+
 /* Auth */
 export const setTokenToLocalStorage = (value, tokenKey = TOKEN_KEY) => {
   if (localStorage) {
     localStorage.setItem(tokenKey, JSON.stringify(value));
+  }
+};
+
+export const getTokenFromLocalStorage = (tokenKey = TOKEN_KEY) => {
+  if (localStorage && localStorage.getItem(tokenKey)) {
+    return JSON.parse(localStorage.getItem(tokenKey));
+  }
+  return null;
+};
+
+export const clearTokenFromLocalStorage = (tokenKey = TOKEN_KEY) => {
+  if (localStorage) {
+    localStorage.removeItem(tokenKey);
   }
 };
