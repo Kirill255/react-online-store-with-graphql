@@ -12,6 +12,12 @@ https://github.com/mariobermudezjr/ecommerce-react-graphql-stripe
 
 https://blog.strapi.io/building-a-static-website-using-gatsby-and-strapi/
 
+## Related
+
+https://strapi.io/ — The open source Headless CMS Front-End Developers love.
+
+https://stripe.com/ — The new standard in online payments
+
 ## Strapi
 
 ### Install
@@ -165,4 +171,14 @@ query {
     price
   }
 }
+```
+
+## Stripe
+
+https://stripe.com/docs/development
+
+https://stripe.com/docs/recipes/elements-react
+
+```
+You may test your Stripe.js integration over HTTP. However, live Stripe.js integrations must use HTTPS.
 ```

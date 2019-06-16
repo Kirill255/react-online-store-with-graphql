@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { Container, Box, Heading, TextField, Text, Button } from "gestalt";
+import { Container, Box, Heading, TextField, Text } from "gestalt";
+import { Elements, StripeProvider, CardElement, injectStripe } from "react-stripe-elements";
 
 import ConfirmationModal from "./ConfirmationModal";
 import ToastMessage from "./ToastMessage";
 
 import { calculatePrice, getCartFromLocalStorage } from "../utils";
 
-const Checkout = () => {
+// наш вспомогательный компонент с разметкой, сюда же добавили stripe-credit-card-input
+const _CheckoutForm = () => {
   const [cartItems, setCartItems] = useState([]);
   const [orderInfo, setOrderInfo] = useState({
     address: "",
@@ -150,9 +152,12 @@ const Checkout = () => {
                 placeholder="Confirmation Email Address"
                 onChange={handleChange}
               />
-              <Box marginTop={1}>
-                <Button type="submit" text="Submit" color="blue" inline />
-              </Box>
+              {/* Stripe Credit Card Element Input */}
+              <CardElement id="stripe__input" onReady={(input) => input.focus()} />
+
+              <button id="stripe__button" type="submit">
+                Submit
+              </button>
             </form>
           </>
         ) : (
@@ -181,5 +186,17 @@ const Checkout = () => {
     </Container>
   );
 };
+
+// проинжектили наш вспомогательный компонент
+const CheckoutForm = injectStripe(_CheckoutForm);
+
+// наш экспортируемый по-умолчанию компонент
+const Checkout = () => (
+  <StripeProvider apiKey="pk_test_0FvZKOX93M2PW3lLdvxnp09Y00R1TmWhEJ">
+    <Elements>
+      <CheckoutForm />
+    </Elements>
+  </StripeProvider>
+);
 
 export default Checkout;

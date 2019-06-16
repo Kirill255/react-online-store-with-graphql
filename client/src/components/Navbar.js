@@ -42,9 +42,12 @@ const AuthNav = ({ handleSigout }) => (
         <Box width={50} height={50} margin={2}>
           <Image src="./icons/logo.svg" naturalWidth={1} naturalHeight={1} alt="BreHaha Logo" />
         </Box>
-        <Heading size="xs" color="orange">
-          BrewHaha
-        </Heading>
+        {/* Title */}
+        <div className="main-title">
+          <Heading size="xs" color="orange">
+            BrewHaha
+          </Heading>
+        </div>
       </Box>
     </NavLink>
 
@@ -77,9 +80,12 @@ const UnAuthNav = () => {
           <Box width={50} height={50} margin={2}>
             <Image src="./icons/logo.svg" naturalWidth={1} naturalHeight={1} alt="BreHaha Logo" />
           </Box>
-          <Heading size="xs" color="orange">
-            BrewHaha
-          </Heading>
+          {/* Title */}
+          <div className="main-title">
+            <Heading size="xs" color="orange">
+              BrewHaha
+            </Heading>
+          </div>
         </Box>
       </NavLink>
 
