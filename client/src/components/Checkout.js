@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Container, Box, Heading, TextField, Text, Button } from "gestalt";
 
+import ConfirmationModal from "./ConfirmationModal";
 import ToastMessage from "./ToastMessage";
 
 import { calculatePrice, getCartFromLocalStorage } from "../utils";
@@ -15,6 +16,8 @@ const Checkout = () => {
   });
   const [toastVisible, setToastVisible] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
+  const [orderProcessing, setOrderProcessing] = useState(false);
+  const [modal, setModal] = useState(false);
 
   // получить значения из localStorage при загрузке/перезагрузке страницы
   useEffect(() => {
@@ -28,7 +31,7 @@ const Checkout = () => {
     setOrderInfo((prevOrderInfo) => ({ ...prevOrderInfo, [name]: value }));
   };
 
-  const handleSubmit = async (e) => {
+  const handleConfirmOrder = (e) => {
     e.preventDefault();
 
     // если поля формы пустые
@@ -36,8 +39,21 @@ const Checkout = () => {
       showToast("Fill in all fields");
       return;
     }
-    console.log(orderInfo);
+    // console.log(orderInfo);
+    // если поля заполнены, то открываем диалоговое окно
+    setModal(true);
   };
+
+  const handleSubmitOrder = async () => {
+    setOrderProcessing(true);
+    setTimeout(() => {
+      setOrderProcessing(false);
+      closeModal();
+      console.log("sunmit");
+    }, 3000);
+  };
+
+  const closeModal = () => setModal(false);
 
   const isFormEmpty = ({ address, postalCode, city, confirmationEmailAddress }) =>
     !address || !postalCode || !city || !confirmationEmailAddress;
@@ -100,7 +116,7 @@ const Checkout = () => {
                 textAlign: "center",
                 maxWidth: 450
               }}
-              onSubmit={handleSubmit}
+              onSubmit={handleConfirmOrder}
             >
               {/* Shipping Address Input */}
               <TextField
@@ -151,6 +167,15 @@ const Checkout = () => {
           </Box>
         )}
       </Box>
+      {/* Confirmation Modal */}
+      {modal && (
+        <ConfirmationModal
+          cartItems={cartItems}
+          orderProcessing={orderProcessing}
+          closeModal={closeModal}
+          handleSubmitOrder={handleSubmitOrder}
+        />
+      )}
       {/* ToastMessage */}
       <ToastMessage show={toastVisible} message={toastMessage} />
     </Container>
