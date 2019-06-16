@@ -173,6 +173,14 @@ query {
 }
 ```
 
+11. Create on dashboard new Content Types: `Order` with 4 fields: `address`, `postalCode`, `city`, `brews`
+
+![ordertype](https://user-images.githubusercontent.com/24504648/59567486-2521f080-9077-11e9-9287-0f3d50f42b93.png)
+
+12. Add on dashboard Roles & Permissions for Order type in Authenticated: create
+
+![permorder](https://user-images.githubusercontent.com/24504648/59567518-85b12d80-9077-11e9-9039-b34194f52829.png)
+
 ## Stripe
 
 https://stripe.com/docs/development
