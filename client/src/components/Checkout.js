@@ -1,14 +1,21 @@
 import React, { useState, useEffect } from "react";
+import { withRouter } from "react-router-dom";
 import { Container, Box, Heading, TextField, Text } from "gestalt";
 import { Elements, StripeProvider, CardElement, injectStripe } from "react-stripe-elements";
+import Strapi from "strapi-sdk-javascript/build/main";
 
 import ConfirmationModal from "./ConfirmationModal";
 import ToastMessage from "./ToastMessage";
 
-import { calculatePrice, getCartFromLocalStorage } from "../utils";
+// prettier-ignore
+import { calculatePrice, calculateAmount, getCartFromLocalStorage , clearCartFromLocalStorage } from "../utils";
+
+const apiUrl = process.env.API_URL || "http://localhost:1337";
+const strapi = new Strapi(apiUrl);
 
 // наш вспомогательный компонент с разметкой, сюда же добавили stripe-credit-card-input
-const _CheckoutForm = () => {
+// stripe приходит в пропсы после injectStripe https://github.com/stripe/react-stripe-elements#setting-up-your-payment-form-injectstripe
+const _CheckoutForm = ({ stripe, history }) => {
   const [cartItems, setCartItems] = useState([]);
   const [orderInfo, setOrderInfo] = useState({
     address: "",
@@ -47,12 +54,43 @@ const _CheckoutForm = () => {
   };
 
   const handleSubmitOrder = async () => {
+    const amount = calculateAmount(cartItems); // total price
+
     setOrderProcessing(true);
-    setTimeout(() => {
+
+    try {
+      // create stripe token
+      const response = await stripe.createToken();
+      const token = response.token.id;
+
+      const { address, postalCode, city } = orderInfo;
+
+      // create order with strapi sdk (make request to backend)
+      await strapi.createEntry("orders", {
+        address,
+        postalCode,
+        city,
+        brews: cartItems,
+        amount,
+        token
+      });
+
+      // set orderProcessing - false, set modal - false
       setOrderProcessing(false);
-      closeModal();
-      console.log("sunmit");
-    }, 3000);
+      setModal(false);
+
+      // clear user card of brews
+      clearCartFromLocalStorage();
+
+      // show success toast and than redirect to "/"
+      showToast("Your order has been successfully submitted!", true);
+    } catch (error) {
+      // set order processing - false, modal - false
+      setOrderProcessing(false);
+      setModal(false);
+      // show error toast with error message
+      showToast(error.message);
+    }
   };
 
   const closeModal = () => setModal(false);
@@ -60,13 +98,17 @@ const _CheckoutForm = () => {
   const isFormEmpty = ({ address, postalCode, city, confirmationEmailAddress }) =>
     !address || !postalCode || !city || !confirmationEmailAddress;
 
-  const showToast = (msg) => {
+  const showToast = (msg, redirect = false) => {
     setToastVisible(true);
     setToastMessage(msg);
 
     setTimeout(() => {
       setToastVisible(false);
       setToastMessage("");
+      // if true is passed to 'redirect' argument, redirect home
+      if (redirect) {
+        history.push("/");
+      }
     }, 3000);
   };
 
@@ -188,7 +230,7 @@ const _CheckoutForm = () => {
 };
 
 // проинжектили наш вспомогательный компонент
-const CheckoutForm = injectStripe(_CheckoutForm);
+const CheckoutForm = withRouter(injectStripe(_CheckoutForm));
 
 // наш экспортируемый по-умолчанию компонент
 const Checkout = () => (

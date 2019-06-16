@@ -8,6 +8,10 @@ const TOKEN_KEY = "jwt";
 export const calculatePrice = (items) =>
   `$ ${items.reduce((acc, item) => acc + item.quantity * item.price, 0).toFixed(2)}`;
 
+// 95.89, т.к. после .toFixed() возвращается строка, приводим к числу Number()
+export const calculateAmount = (items) =>
+  Number(items.reduce((acc, item) => acc + item.quantity * item.price, 0).toFixed(2));
+
 /* Cart */
 export const setCartToLocalStorage = (value, cartKey = CART_KEY) => {
   if (localStorage) {
