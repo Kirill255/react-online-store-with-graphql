@@ -63,7 +63,7 @@ const _CheckoutForm = ({ stripe, history }) => {
       const response = await stripe.createToken();
       const token = response.token.id;
 
-      const { address, postalCode, city } = orderInfo;
+      const { address, postalCode, city, confirmationEmailAddress } = orderInfo;
 
       // create order with strapi sdk (make request to backend)
       await strapi.createEntry("orders", {
@@ -73,6 +73,16 @@ const _CheckoutForm = ({ stripe, history }) => {
         brews: cartItems,
         amount,
         token
+      });
+
+      // send email to client confirmationEmailAddress
+      await strapi.request("POST", "/email", {
+        data: {
+          to: confirmationEmailAddress,
+          subject: `Order Confirmation — BrewHaha ${new Date(Date.now())}`,
+          text: "Your order has been processed",
+          html: "<bold>Expect your order to arrive in 2-3 shipping days</bold>"
+        }
       });
 
       // set orderProcessing - false, set modal - false

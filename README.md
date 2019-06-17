@@ -187,6 +187,24 @@ https://stripe.com/docs/development
 
 https://stripe.com/docs/recipes/elements-react
 
+1. Modify create controller in server/api/order/controllers/Order.js
+
 ```
 You may test your Stripe.js integration over HTTP. However, live Stripe.js integrations must use HTTPS.
 ```
+
+## Send emails
+
+https://app.sendgrid.com/guide/integrate/langs/nodejs
+
+1. On server-side install provider `npm install strapi-provider-email-sendgrid@alpha --save`
+
+2. After installing provider, on dashboard in Email plugin settings, we can select `sendgrid` option, set Sendgrid API key and your emails
+
+![email](https://user-images.githubusercontent.com/24504648/59628422-4bb05c00-9149-11e9-8649-e5b1e650f171.png)
+
+3. Add on dashboard Roles & Permissions for Email plugin in Authenticated: send
+
+![emailperm](https://user-images.githubusercontent.com/24504648/59629906-967fa300-914c-11e9-8385-e38e36d698f6.png)
+
+4. Modify send controller in server/plugins/email/controllers/Email.js
