@@ -12,6 +12,8 @@ https://github.com/mariobermudezjr/ecommerce-react-graphql-stripe
 
 https://blog.strapi.io/building-a-static-website-using-gatsby-and-strapi/
 
+https://habr.com/ru/company/ruvds/blog/348068/
+
 ## Related
 
 https://strapi.io/ — The open source Headless CMS Front-End Developers love.
@@ -26,7 +28,7 @@ https://stripe.com/ — The new standard in online payments
 
 2. Then create project `strapi new server` and select `custom` -> It's a database connection setup:
 
-- mLab https://github.com/strapi/strapi/issues/2013
+- mLab https://github.com/strapi/strapi/issues/2013 https://medium.com/strapi/using-mlab-with-strapi-e3f968a9c530
 
 ```
 // (for example: mongo connection string "mongodb://<dbuser>:<password>@ds062807.mlab.com:62807/react-online-store-with-graphql")
@@ -208,3 +210,54 @@ https://app.sendgrid.com/guide/integrate/langs/nodejs
 ![emailperm](https://user-images.githubusercontent.com/24504648/59629906-967fa300-914c-11e9-8385-e38e36d698f6.png)
 
 4. Modify send controller in server/plugins/email/controllers/Email.js
+
+## Search with GraphQL
+
+Ищем бренды где в имени есть подстрока "river":
+
+```gql
+query {
+  brands(where: {
+    name_contains: "river"
+  }) {
+    _id
+    name
+    description
+  }
+}
+```
+
+Ищем бренды где в описании есть подстрока "s":
+
+```gql
+query {
+  brands(where: {
+    description_contains: "s"
+  }) {
+    _id
+    name
+    description
+  }
+}
+```
+
+Поиск сразу по несольким полям (в данный момент strapi всё ещё не поддерживает операторы OR, AND, NOT) поэтому этот запрос не работает, но код должен быть примерно следующим:
+
+```gql
+query {
+  brands(where: {
+    OR: [
+      { name_contains: "s" },
+      { description_contains: "s" }
+    ]
+  }) {
+    _id
+    name
+    description
+  }
+}
+```
+
+А также нужно изменить права доступа у Brand в Public и Authenticated: для find и findone с ratelimit на None, т.к. запросов теперь будет гораздо больше
+
+![brendperms](https://user-images.githubusercontent.com/24504648/59667025-b354be80-91be-11e9-9d94-ed75c5c98c21.png)

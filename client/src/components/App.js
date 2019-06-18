@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 // prettier-ignore
 import { Container, Box, Heading, Card, Image, Text, SearchField, Icon /* , Spinner */ } from "gestalt";
 import { Link } from "react-router-dom";
@@ -56,16 +56,60 @@ function App() {
     };
   }, []);
 
-  const handleChange = ({ value }) => setSearchTerm(value); // e.value, not e.target.value, it's gestalt input
+  // e.value, not e.target.value, it's gestalt input
+  const handleChange = ({ value }) => {
+    setSearchTerm(value); // после того как строка поиска изменилась, вызвать searchBrands
+    // searchBrands(); // не знаю будут ли баги, т.к. у хуков нет коллбэка, а стейт всё-таки асинхронный, с rcc было бы так this.setState({ searchTerm: value }, () => this.searchBrands());
 
-  const filteredBrands = () => {
-    return brands.filter((brand) => {
-      return (
-        brand.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        brand.description.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    });
+    // upd: так точно будут баги! вводите символ поиска и нет перерендера, вводите второй символ поиска и отображается результат поиска с предыдущего раза и т.д
+    // вводите "s" -> ничего
+    // продолжаете ввод "so" -> показывает результат поиска для "s"
+    // продолжаете ввод "sol" -> показывает результат поиска для "so"
+
+    // вариант1: переписать на react-class-component
+    // вариант2: засунул вызов searchBrands() не в хэндлер handleChange, а в useEffect и слушаю изменения searchTerm, ну и в useCallback завернул
   };
+
+  // const filteredBrands = () => {
+  //   return brands.filter((brand) => {
+  //     return (
+  //       brand.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+  //       brand.description.toLowerCase().includes(searchTerm.toLowerCase())
+  //     );
+  //   });
+  // };
+
+  // используем graphql поиск вместо поиска на клиенте с помощью filter метода
+  // const searchBrands = async () => {
+  const searchBrands = useCallback(async () => {
+    setLoadingBrands(true);
+
+    const { data } = await strapi.request("POST", "/graphql", {
+      data: {
+        query: `query{
+          brands(where: {
+            name_contains: "${searchTerm}"
+          }){
+            _id
+            name
+            description
+            image {
+              url
+            }
+          }
+        }`
+      }
+    });
+
+    if (isMounted.current) {
+      setBrands(data.brands);
+      setLoadingBrands(false);
+    }
+  }, [searchTerm]);
+
+  useEffect(() => {
+    searchBrands();
+  }, [searchBrands, searchTerm]);
 
   return (
     <Container>
@@ -106,7 +150,7 @@ function App() {
         justifyContent="around"
         wrap
       >
-        {filteredBrands().map((brand) => (
+        {brands.map((brand) => (
           <Box width={200} margin={2} paddingY={4} key={brand._id}>
             <Card
               image={
