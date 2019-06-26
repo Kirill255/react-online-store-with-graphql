@@ -14,6 +14,8 @@ https://blog.strapi.io/building-a-static-website-using-gatsby-and-strapi/
 
 https://habr.com/ru/company/ruvds/blog/348068/
 
+https://blog.risingstack.com/stripe-payments-integration-tutorial-javascript
+
 ## Related
 
 https://strapi.io/ — The open source Headless CMS Front-End Developers love.
